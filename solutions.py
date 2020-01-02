@@ -4,6 +4,15 @@ Created on Wed Jan  1 12:57:04 2020
 
 Leet Code Practice
 
+1,31,54,76,78,
+131,
+202,204,263,264,278,289,
+300,
+-
+-
+643,
+
+
 @author: RoyCheng
 """
 
@@ -85,9 +94,69 @@ class Solution0054(object):
 #%%
 # No.0076 Minimum Window Substring     
 # Difficulty: Hard
-# Tag:
+# Tag: - double pointers
 # Comments: 
-# Complexity:
+# Complexity:O(len(s)+len(t)) 
+class Solution0076(object):
+    def minWindow(self, s, t): # double pointers method, Sliding Window
+        """
+        :type s: str
+        :type t: str
+        :rtype: str
+        """
+        if not t or not s:
+            return ""
+        dict_t = self.__count_unique__(t)
+        totalUniqueChar = len(dict_t)# Number of unique characters in t,
+        l, r = 0, 0 # left and right pointer
+        includeUniqueChar = 0
+        window_counts = {} # same format as dict_t
+        # result tuple of the form (window length, left, right)
+        result = float("inf"), None, None
+        while r < len(s):
+            character = s[r] # inlude one new on right
+            window_counts[character] = window_counts.get(character,0) + 1
+            # If the frequency of the current character added equals to the desired count in t then increment the formed count by 1.
+            if character in dict_t and window_counts[character] == dict_t[character]:
+                includeUniqueChar += 1
+            # Try and contract the window till the point where it ceases to be 'desirable'.
+            while l <= r and includeUniqueChar == totalUniqueChar:
+                character = s[l]
+                if r - l + 1 < result[0]: # Save the smallest window until now.
+                    result = (r - l + 1, l, r)
+                # The character at the position pointed by the `left` pointer is no longer a part of the window.
+                window_counts[character] -= 1
+                if character in dict_t and window_counts[character] < dict_t[character]:
+                    includeUniqueChar -= 1
+                # Move the left pointer ahead, this would help to look for a new window.
+                l += 1    
+            # Keep expanding the window once we are done contracting.
+            r += 1    
+        return "" if result[0] == float("inf") else s[result[1] : result[2] + 1]       
+
+    def __count_unique__(self, string):
+        '''count unique characters in string'''
+        dic = {}
+        for i in range(len(string)):
+            if string[i] not in dic.keys():
+                dic[string[i]] = string.count(string[i])
+            else:
+                pass
+        return dic
+    
+    def SharePurchase(s): # special t for 'ABC'
+        dic = dict(zip('ABC'),[0,0,0])
+        left = 0
+        count = 0
+        for right in range(len(s)):
+            if s[right] in 'ABC':
+                dic[s[right]] += 1
+                while all(dic.values()):
+                    count += len(s) - right
+                    if s[left] in 'ABC':
+                        dic[s[left]] -= 1
+                    left += 1
+        return count
 #%%
 # No. 0078 Subsets      
 # Difficulty: Medium
@@ -110,6 +179,16 @@ class Solution0078:
         for num in nums:
             output += [curr + [num] for curr in output]
         return output    
+#%%
+# No. 0131 Palindrome Partitioning       
+# Difficulty: Medium
+# Tag: 
+# Comments:
+# Complexity: 
+class Solution0131:
+    pass
+    
+
     
 #%%
 # No. 0202 Happy Number      
@@ -156,12 +235,59 @@ class Solution0202:
         return self.testIsHappy(theList, total)   
     
 #%%
+# No. 0204 Count Prime    
+# Difficulty: Easy
+# Tag: 
+# Comments:
+# Complexity: 
+class Solution0204:
+    pass
+    
+
+#%%
+# No. 0263 Ugly Number      
+# Difficulty: Easy
+# Tag: 
+# Comments:
+# Complexity: O(log(n))
+class Solution0263:
+    def isUgly(self, num: int) -> bool: # loop
+        if num == 1:
+            return True
+        if num <= 0:
+            return False
+        while(num > 1):
+            if num % 2 != 0 and num % 3 != 0 and num % 5 != 0:
+                return False
+            if num % 2 == 0:
+                num = num / 2
+            elif num % 3 == 0:
+                num = num / 3
+            elif num % 5 == 0:
+                num = num / 5
+        return True    
+#%%
+# No. 0264 Ugly Number 2     
+# Difficulty: Medium
+# Tag: 
+# Comments: use space in exchange for time
+# Complexity: O(n)
+class Solution0264:
+    pass
+
+
+
+
+
+    
+    
+#%%
 # No. 0278 First Bad Version      
 # Difficulty: Easy
 # Tag: -typical
 # Comments: 
 # Complexity: O(log(n))
-class Solution:
+class Solution0278:
     def firstBadVersion(self, n): # binary search 
         """
         :type n: int
@@ -183,7 +309,7 @@ class Solution:
 # Comments: one stage game of life
 # Complexity: O(m*n)
 import copy
-class Solution(object):
+class Solution0289:
     def gameOfLife(self, board): # space solution
         R,C = len(board),len(board[0])
         board_copy = copy.deepcopy(board)
@@ -209,13 +335,67 @@ class Solution(object):
                 else:
                     pass
         return live
+    
+    def grid_game(grid, k, rules): # loop solution
+        m = len(grid)
+        n = len(grid[0])
+        rule_list = [i for i, x in enumerate(rules) if x == "alive"]
+        neighbors = [(1, 1), (0, 1), (1, 0), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
+        for _ in range(k, 0, -1):
+            for row in range(m):
+                for col in range(n):
+                    live_neighbor = 0
+                    for neighbor in neighbors:
+                        temp_row = row + neighbor[0]
+                        temp_col = col + neighbor[1]
+    
+                        if m > temp_row >= 0 and n > temp_col >= 0 and abs(grid[temp_row][temp_col]) == 1:
+                            live_neighbor += 1
+    
+                    if grid[row][col] == 1 and live_neighbor not in rule_list:
+                        grid[row][col] = -1
+                    if grid[row][col] == 0 and live_neighbor in rule_list:
+                        grid[row][col] = 2
+            for row in range(m):
+                for col in range(n):
+                    if grid[row][col] > 0:
+                        grid[row][col] = 1
+                    else:
+                        grid[row][col] = 0
+                        
+#%% 
+# No. 0300 Longest Increasing Subsequence    
+# Difficulty: Medium
+# Tag: -DP
+# Comments: 
+# Complexity: O(n^2)        
+class Solution0300:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        if len(nums) == 0:
+            return 0
+        dp = [0] * len(nums) #  length of the longest increasing subsequence possible considering the array elements upto the i th index only
+        dp[0] = 1
+        maxans = 1 # result
+        for i in range(1,len(nums)):
+        # by necessarily including the ith element. 
+        # In order to find out dp[i] we need to try to append the current element(nums[i]) in every possible increasing 
+        # subsequences upto the (i-1) th elemets
+        # such that the new sequence formed by adding the current element is also an increasing subsequence
+            maxval = 0 # dp[i]=max(dp[j])+1, for all 0≤j<i
+            for j in range(0,i):
+                if nums[i] > nums[j]: # else maxval=0
+                    maxval = max(maxval,dp[j])
+            dp[i] = maxval +1
+            maxans =  max(maxans,dp[i]) # at the end
+        return maxans
+                        
 #%%
 # No. 0643 Maximum Average Subarray I     
 # Difficulty: Easy
 # Tag: -typical
 # Comments: 
 # Complexity: O(n)
-class Solution(object):
+class Solution0643(object):
     def findMaxAverage(self, nums, k): # cumulative sum
         """
         :type nums: List[int]
@@ -230,18 +410,6 @@ class Solution(object):
 		    result = max(result, (sumList[i] - sumList[i - k]) * 1.0 / k);
         return result
 
-#%%
-# No.      
-# Difficulty:
-# Tag:
-# Comments: 
-# Complexity:
-#%%
-# No.      
-# Difficulty:
-# Tag:
-# Comments: 
-# Complexity:
 #%%
 # No.      
 # Difficulty:
