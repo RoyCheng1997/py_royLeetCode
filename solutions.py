@@ -184,7 +184,7 @@ class Solution0078:
 # Difficulty: Medium
 # Tag: -DP, -recursion
 # Comments:
-# Complexity: 
+# Complexity: NAN
 class Solution0131:
     def partition_recur(self, s: str) -> List[List[str]]:
         self.partitions = []
