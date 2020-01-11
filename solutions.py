@@ -182,13 +182,39 @@ class Solution0078:
 #%%
 # No. 0131 Palindrome Partitioning       
 # Difficulty: Medium
-# Tag: 
+# Tag: -DP, -recursion
 # Comments:
 # Complexity: 
 class Solution0131:
-    pass
+    def partition_recur(self, s: str) -> List[List[str]]:
+        self.partitions = []
+        self.backtrack(0, (), s)
+        return self.partitions
     
-
+    def backtrack(self, pos: int, partition: tuple, s:str):
+        if pos == len(s):
+            self.partitions.append(list(partition))
+        else:
+            # Traverse from `pos` to the end of the string
+            for i in range(pos, len(s)):
+                # If the substring is a palindrome then add it 
+                # to the current parition and recusively backtrack
+                # from `i+1`
+                if self.is_palindromic(s[pos:i+1]):
+                    self.backtrack(i+1, partition + (s[pos:i+1],), s)
+                    
+    def is_palindromic(self, s: str) -> bool: 
+        ''' whether is palindromic, symmetric'''
+        return s[:] == s[::-1]    
+    
+    def partition_DP(self, s: str) -> List[List[str]]:
+        dp = [[[]]]
+        psi = [0]   # palindrome start indices
+        for i, c in enumerate(s):
+            psi = [k for k in psi if s[k] == s[i]]
+            dp.append([pp + [s[k:i+1]] for k in psi for pp in dp[k]])
+            psi = [k-1 for k in psi if k > 0] + [i, i+1]
+        return dp[-1]
     
 #%%
 # No. 0202 Happy Number      
@@ -237,12 +263,38 @@ class Solution0202:
 #%%
 # No. 0204 Count Prime    
 # Difficulty: Easy
-# Tag: 
-# Comments:
-# Complexity: 
-class Solution0204:
-    pass
-    
+# Tag: -typical
+# Comments: Sieve method
+# Complexity: O(nlog(log(n)))
+class Solution0264:
+	def countPrimes(self, n: int) -> int:# sieve method
+		# https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
+		if n <= 2:
+			return 0
+		else:
+			markers = [1] * n # to mark an element from 0 to n-1
+			markers[0] = 0
+			markers[1] = 0
+			# iterate
+			m = 2
+			while m*m < n: # less than n
+				if markers[m] == 1: # found a prime, then its multiples are not prime
+					# mark from m * m, as m * (m-1), m * (m-2), and so on have been marked in previous iteration
+					markers[m*m:n:m] = [0] * (1 + (n-1-m*m)//m)
+				m += 1
+			return sum(markers)
+
+# prime number
+def isPrime(num):
+    '''to judge whether the number is prime (best solution)'''
+    if (num <= 3): return num>1
+    if (num % 6 !=1) and (num % 6 !=5): #6k-1 or 6k+5
+        return False
+    sqrtValue = int(sqrt(num))
+    for i in range(5,sqrtValue+1,6):
+        if (num % i == 0) or (num % (i+2) == 0):
+            return False
+    return True
 
 #%%
 # No. 0263 Ugly Number      
@@ -269,17 +321,32 @@ class Solution0263:
 #%%
 # No. 0264 Ugly Number 2     
 # Difficulty: Medium
-# Tag: 
+# Tag: -DP
 # Comments: use space in exchange for time
 # Complexity: O(n)
 class Solution0264:
-    pass
+    def nthUglyNumbern(self, n: int) -> int:
+        c2,c3,c5 = 0,0,0 # count of 2,3,5
+        n2,n3,n5 = 2,3,5
+        dpList = [1] # result list
+        while len(dpList)<n:
+            x = min(n2,min(n3,n5)) # min(n2,n3,n5),possible solution for next iteration
+            if x != dpList[-1]: # if not in it
+                dpList.append(x)
+            else:
+                pass
+            # iteration
+            if x == n2: 
+                c2 += 1
+                n2 = 2 * dpList[c2]
+            elif x == n3:
+                c3 += 1
+                n3 = 3 * dpList[c3]
+            else:
+                c5 += 1
+                n5 = 5 * dpList[c5]
+        return dpList[n-1]
 
-
-
-
-
-    
     
 #%%
 # No. 0278 First Bad Version      
